@@ -1,0 +1,8 @@
+# One RSS URL per line. Lines beginning with # are ignored.
+https://feeds.arstechnica.com/arstechnica/index
+https://www.technologyreview.com/feed/
+https://spectrum.ieee.org/feeds/feed.rss
+https://techcrunch.com/feed/
+https://news.ycombinator.com/rss
+https://digiato.com/feed/
+https://zoomit.ir/feed/

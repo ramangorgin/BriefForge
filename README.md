@@ -112,4 +112,3 @@ The `.gitignore` excludes `.env`, generated files, workspace data, virtual envir
 - Check Persian font rendering and right-to-left text in LibreOffice.
 - Rehearse and time the narration.
 - Test that speaker notes appear in Impress and on your Android remote.
-# BriefForge
