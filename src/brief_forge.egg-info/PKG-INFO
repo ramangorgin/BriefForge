@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: brief-forge
+Version: 0.2.0
+Requires-Python: >=3.11
+Requires-Dist: openai>=1.40.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: feedparser>=6.0.11

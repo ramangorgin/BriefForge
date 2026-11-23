@@ -5,10 +5,10 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(
         prog="brief-forge",
-        description="Generate a technology news presentation with private speaker notes."
+        description="Generate a plain-text technology news briefing."
     )
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("generate", help="Collect news and generate a PPTX presentation")
+    sub.add_parser("generate", help="Collect news and generate a TXT file")
     args = parser.parse_args()
     if args.command == "generate":
         try:

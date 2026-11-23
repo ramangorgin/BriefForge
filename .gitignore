@@ -20,23 +20,8 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Node.js dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
-
-# Generated presentations and output
+# Generated output
 output/
-*.pptx
-*.odp
-
-# Generated images and intermediate workspace
-workspace/
-*.png
-*.jpg
-*.jpeg
-*.webp
 
 # IDE and editor settings
 .vscode/

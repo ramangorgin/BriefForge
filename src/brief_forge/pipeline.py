@@ -1,61 +1,61 @@
 from datetime import datetime
 from pathlib import Path
-import json
-import subprocess
-from .config import PROJECT_ROOT
 from .feeds import load_feed_urls, collect_articles
-from .llm import create_editorial_plan
-from .images import generate_slide_image
+from .llm import create_news_brief
+
+
+def format_news_brief(plan):
+    lines = [
+        "Technology News Brief",
+        f"Date: {plan.get('edition_date', '')}",
+        f"Language: {plan.get('language', '')}",
+        "",
+    ]
+    news = plan.get("news", [])
+    for index, item in enumerate(news, start=1):
+        lines.extend([
+            f"{index}. {item['headline']}",
+            f"Description: {item['description']}",
+            "Highlights:",
+        ])
+        for highlight in item.get("highlights", []):
+            lines.append(f"- {highlight}")
+        lines.extend([
+            f"Source: {item.get('source', '')}",
+            f"Published: {item.get('published', '')}",
+            f"Link: {item['url']}",
+            "",
+        ])
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def write_news_text(plan, output_path):
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(format_news_brief(plan), encoding="utf-8")
+    return output_path
 
 def run_generation(settings):
     settings.validate()
     feeds = load_feed_urls(settings.feeds_file)
-    print(f"[1/5] Collecting RSS articles from {len(feeds)} feeds...")
+    print(f"[1/3] Collecting RSS articles from {len(feeds)} feeds...")
     articles, errors = collect_articles(feeds, settings.max_articles, settings.days_back)
-    if len(articles) < 3:
+    if len(articles) < 1:
         details = "\n".join(errors[:5])
         raise RuntimeError(
-            f"Only {len(articles)} usable articles were collected. Check network/RSS feeds.\n{details}"
+            f"No usable articles were collected. Check network/RSS feeds.\n{details}"
         )
     print(f"      Collected {len(articles)} articles.")
     if errors:
         print(f"      Warning: {len(errors)} feed(s) could not be read.")
 
-    print("[2/5] Asking the LLM to select stories and write the presentation...")
-    plan = create_editorial_plan(articles, settings)
-    slides = plan["slides"]
-
+    print("[2/3] Asking the text model to select stories and write highlights...")
+    plan = create_news_brief(articles, settings)
     run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
-    work_dir = settings.workspace_dir / run_id
-    image_dir = work_dir / "images"
-    image_dir.mkdir(parents=True, exist_ok=True)
-    (work_dir / "plan.json").write_text(
-        json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    output_path = settings.output_dir / f"BriefForge_{run_id}.txt"
+    write_news_text(plan, output_path)
 
-    print(f"[3/5] Generating {len(slides)} slide illustrations...")
-    for index, slide in enumerate(slides, start=1):
-        target = image_dir / f"slide_{index:02d}.png"
-        print(f"      Image {index}/{len(slides)}: {slide.get('title', 'Untitled')}")
-        generate_slide_image(slide, index, settings, target)
-        slide["image_path"] = str(target.resolve())
-
-    manifest = work_dir / "manifest.json"
-    manifest.write_text(json.dumps({
-        "title": plan.get("presentation_title", settings.presentation_title),
-        "edition_date": plan.get("edition_date", ""),
-        "language": settings.language,
-        "slides": slides
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
-
-    print("[4/5] Building PowerPoint with private speaker notes...")
-    node_script = PROJECT_ROOT / "deck" / "build_deck.js"
-    if not (PROJECT_ROOT / "node_modules" / "pptxgenjs").exists():
-        raise RuntimeError("PptxGenJS is not installed. Run: npm install")
-    output_path = settings.output_dir / f"BriefForge_{run_id}.pptx"
-    subprocess.run(["node", str(node_script), str(manifest), str(output_path)], check=True)
-
-    print("[5/5] Finished.")
-    print(f"Presentation: {output_path.resolve()}")
+    print("[3/3] Finished.")
+    print(f"News file: {output_path.resolve()}")
     print("Reminder: RSS summaries are leads, not independent verification.")
     return output_path

@@ -1,8 +1,0 @@
-{
-  "name": "brief-forge-deck-builder",
-  "version": "0.1.0",
-  "private": true,
-  "description": "PPTX generation with native speaker notes for BriefForge",
-  "scripts": { "build": "node deck/build_deck.js" },
-  "dependencies": { "pptxgenjs": "^3.12.0" }
-}
