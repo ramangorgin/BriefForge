@@ -72,7 +72,7 @@ git status
 git commit -m "Initial BriefForge project"
 ```
 
-The `.gitignore` excludes `.env`, generated files, virtual environments and `node_modules`.
+The `.gitignore` excludes `.env`, generated `.txt` files and virtual environments.
 
 ## Configuration reference
 
@@ -86,6 +86,12 @@ The `.gitignore` excludes `.env`, generated files, virtual environments and `nod
 | `NEWS_COUNT` | Number of selected news items to include |
 | `DAYS_BACK` | RSS publication-age window |
 | `OUTPUT_DIR` | Output directory |
+| `LLM_TIMEOUT` | Seconds to wait for the text-model API |
+
+`MAX_ARTICLES` limits the news candidates sent to the model, while `NEWS_COUNT`
+limits the number of stories requested in the output. `MAX_ARTICLES` must be
+greater than or equal to `NEWS_COUNT`. For example, `MAX_ARTICLES=35` sends up
+to 35 candidates and `NEWS_COUNT=10` asks for exactly 10 results.
 
 ## Workflow
 

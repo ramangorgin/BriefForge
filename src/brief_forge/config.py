@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-load_dotenv(PROJECT_ROOT / ".env")
+load_dotenv(PROJECT_ROOT / ".env", override=True)
 
 @dataclass
 class Settings:
@@ -23,6 +23,12 @@ class Settings:
             raise ValueError("Set LLM_API_KEY in your .env file.")
         if self.news_count < 1:
             raise ValueError("NEWS_COUNT must be at least 1.")
+        if self.max_articles < self.news_count:
+            raise ValueError(
+                "MAX_ARTICLES must be greater than or equal to NEWS_COUNT."
+            )
+        if self.days_back < 1:
+            raise ValueError("DAYS_BACK must be at least 1.")
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
 settings = Settings()

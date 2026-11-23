@@ -45,6 +45,11 @@ def run_generation(settings):
         raise RuntimeError(
             f"No usable articles were collected. Check network/RSS feeds.\n{details}"
         )
+    if len(articles) < settings.news_count:
+        raise RuntimeError(
+            f"Only {len(articles)} articles are available within "
+            f"DAYS_BACK={settings.days_back}, but NEWS_COUNT={settings.news_count}."
+        )
     print(f"      Collected {len(articles)} articles.")
     if errors:
         print(f"      Warning: {len(errors)} feed(s) could not be read.")
